@@ -23,10 +23,10 @@ from aiogram.types import (
 # ==============================================================================
 # 1. BOT CONFIGURATION & CONSTANTS
 # ==============================================================================
-BOT_TOKEN = "YOUR_BOT_TOKEN"
-BOT_USERNAME = "YOUR_BOT_USENAME"
-ADMIN_ID = 
-ADMIN_CONTACT = "@ADMIN_USENMAE"
+BOT_TOKEN = "8677878265:AAFJ2GMXaDerzMzaR6dzgwk-fhDslWvxTa0"
+BOT_USERNAME = "@Sahilbhaikkbot"
+ADMIN_ID = 8395533259
+ADMIN_CONTACT = "@SAHILXD78"
 
 FAMPAY_API_KEY = "YOUR_FAMPAY_API_KEY"  # Replace with your actual API key
 FAMPAY_QR_URL = "https://fampay.anujbots.xyz/qr.php"
