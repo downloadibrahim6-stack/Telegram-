@@ -39,9 +39,7 @@ VIP_PRICE_INR = 1000.0
 WELCOME_STICKER_ID = "CAACAgIAAxkBAAEU-WZmH_..."  # Replace with your sticker ID
 
 FIXED_CATEGORIES = [
-    "ANDROID NON ROOT PANEL",
-    "ANDROID ROOT PANEL",
-    "PC PANEL"
+    
 ]
 
 # ==============================================================================
@@ -167,7 +165,7 @@ def get_emoji_icon(slot: str, default_id: str = None) -> str:
 # ==============================================================================
 UI_TEXTS = {
     "start_menu": (
-        "✨ <b>𝗚𝗔𝗟𝗨 𝗠𝗢𝗗𝗭 𝗦𝗧𝗢𝗥𝗘</b>\n\n"
+        "✨ <b>SAHIL BHAI STORE</b>\n\n"
         "{product_store} 𝗣𝗥𝗢𝗗𝗨𝗖𝗧 𝗦𝘁𝗼𝗿𝗲 : 𝗮𝗹𝗹 𝗸𝗲𝘆𝘀 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲  & 𝗶𝗻𝘀𝘁𝗮𝗻𝘁𝗹𝘆 𝗱𝗲𝗹𝗶𝘃𝗲𝗿𝘆\n"
         "{profile} 𝗠𝘆 𝗽𝗿𝗼𝗳𝗶𝗹𝗲 : 𝗰𝗵𝗲𝗰𝗸 𝘆𝗼𝘂𝗿 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗶𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻\n"
         "{add_balance} 𝗔𝗱𝗱 𝗯𝗮𝗹𝗮𝗻𝗰𝗲 : 𝗱𝗲𝗽𝗼𝘀𝗶𝘁𝗲 𝗯𝗮𝗹𝗮𝗻𝗰𝗲 & 𝘀𝗲𝗰𝘂𝗿𝗲 𝘀𝗲𝗿𝘃𝗶𝗰𝗲\n"
@@ -584,9 +582,6 @@ class AdminStates(StatesGroup):
 # ==============================================================================
 def get_category_emoji(category: str) -> str:
     slot_map = {
-        "ANDROID NON ROOT PANEL": "category_android_non_root",
-        "ANDROID ROOT PANEL": "category_android_root",
-        "PC PANEL": "category_pc",
     }
     slot = slot_map.get(category)
     if slot:
@@ -622,14 +617,14 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
     
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="Product Store", callback_data="menu_shop",
+            text="Buy now", callback_data="menu_shop",
             icon_custom_emoji_id=get_emoji_icon("product_store"),
             style="danger"
         )
     ])
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="My Profile", callback_data="menu_profile",
+            text="Check Update", callback_data="menu_profile",
             icon_custom_emoji_id=get_emoji_icon("profile"),
             style="primary"
         ),
@@ -641,12 +636,12 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
     ])
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="Tutorials", callback_data="menu_how_to",
+            text="Support", callback_data="menu_how_to",
             icon_custom_emoji_id=get_emoji_icon("tutorial"),
             style="success"
         ),
         InlineKeyboardButton(
-            text="Support", callback_data="menu_support",
+            text="How to use bot", callback_data="menu_support",
             icon_custom_emoji_id=get_emoji_icon("support"),
             style="danger"
         )
