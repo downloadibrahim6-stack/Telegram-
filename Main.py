@@ -2403,6 +2403,22 @@ async def main() -> None:
     finally:
         await bot.session.close()
 
+import aiohttp
+
+RESELLER_API_URL = "https://bantibhaiya.to/api/reseller_v1.php"
+RESELLER_API_KEY = "7e711ed2780e1caa238b4c1dfccaeee4"
+
+async def buy_key(product_id, duration):
+    data = {
+        "api_key": RESELLER_API_KEY,
+        "action": "buy",
+        "product_id": product_id,
+        "duration": duration
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(RESELLER_API_URL, data=data) as response:
+            return await response.json()
+    
 if __name__ == "__main__":
     try:
         asyncio.run(main())
