@@ -1474,21 +1474,17 @@ async def process_redeem(m: Message, state: FSMContext):
 
 @dp.callback_query(F.data == "menu_how_to")
 async def tutorial_system(call: CallbackQuery):
-    video_link_query = db_query("SELECT value FROM settings WHERE key='how_to_video'", fetchone=True)
-    video_link = video_link_query[0] if video_link_query and video_link_query[0] != 'None' else None
+    Telegram_link_query = db_query("SELECT value FROM settings WHERE key='https://t.me/sahil_bhai_69'", fetchone=True)
+    Telegram_link = video_link_query[0] if Telegram_link_query and Telegram_link_query[0] != 'None' else None
     text = (f"{get_emoji('tutorial')} <b><u>— TUTORIALS & GUIDE —</u></b> {get_emoji('tutorial')}\n\n1️⃣ Add funds via <b>Add Balance</b>\n2️⃣ Navigate to <b>Product Store</b>\n3️⃣ Choose your desired Panel and Package validity.\n4️⃣ The Key and Installation APK link will be instantly provided.")
     kb = InlineKeyboardMarkup(inline_keyboard=[])
-    if video_link: kb.inline_keyboard.append([InlineKeyboardButton(text="Watch Full Video Tutorial", url=video_link, icon_custom_emoji_id=get_emoji_icon("tutorial"), style="primary")])
+    if Telegram_link: kb.inline_keyboard.append([InlineKeyboardButton(text="Contact on Telegram", url=Telegram_link, icon_custom_emoji_id=get_emoji_icon("tutorial"), style="primary")])
     kb.inline_keyboard.append([InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")])
     await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
 
 @dp.callback_query(F.data == "menu_support")
 async def support_center(call: CallbackQuery):
-    telegram_link = get_setting("support_telegram", "https://t.me/YourSupport")
-    whatsapp_link = get_setting("support_whatsapp", "https://wa.me/YourNumber")
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Contact on Telegram", url=telegram_link, icon_custom_emoji_id=get_emoji_icon("telegram"), style="primary")],
-        [InlineKeyboardButton(text="Contact on WhatsApp", url=whatsapp_link, icon_custom_emoji_id=get_emoji_icon("whatsapp"), style="primary")],
+    telegram_link = get_setting("support_telegram", "https://t.me/SAHILXD78")
         [InlineKeyboardButton(text="🎫 Open New Ticket", callback_data="open_ticket", style="primary"), InlineKeyboardButton(text="📋 My Open Tickets", callback_data="my_tickets", style="primary")], 
         [InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")]
     ])
