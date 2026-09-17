@@ -1485,7 +1485,7 @@ async def tutorial_system(call: CallbackQuery):
 
 @dp.callback_query(F.data == "menu_support")
 async def support_center(call: CallbackQuery):
-    telegram_link = get_setting("support_telegram", "https://t.me/SA") [InlineKeyboardButton(text=" My Open New Ticket", callback_data="open_ticket", style="primary"), InlineKeyboardButton(text=" My Open Tickets", callback_data="my_tickets", style="primary")]
+    telegram_link = get_setting("support_telegram", "https://t.me/SA")[InlineKeyboardButton(text="🎫 My Open New Ticket", callback_data="open_ticket", style="primary"), InlineKeyboardButton(text="🎫 My Open Tickets", callback_data="my_tickets", style="primary")]
       [InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")]
     ])
     await call.message.edit_text(f"{get_emoji('telegram')}{get_emoji('whatsapp')} <b><u>— PREMIUM SUPPORT CENTER —</u></b>\n\nContact us via Telegram or WhatsApp for instant help, or open a support ticket for admin assistance.", reply_markup=kb, parse_mode='HTML')
