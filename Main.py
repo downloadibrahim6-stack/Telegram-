@@ -1209,13 +1209,14 @@ async def process_crypto_txid(m: Message, state: FSMContext):
 async def view_shop_panels(call: CallbackQuery):
     log_activity(call.from_user.id, "VIEW_SHOP")
     kb = InlineKeyboardMarkup(inline_keyboard=[])
-    text = f"{get_emoji('product_store')} <b><u>SELECT PRODUCT PANEL</u></b>\n━━━━━━━━━━━━━━━━━━\n\n{get_emoji('point_down')} <b>Choose a panel to view its packages:</b>"
-    for cat in FIXED_CATEGORIES:
-        count = db_query("SELECT COUNT(*) FROM products WHERE category LIKE ? AND is_active=1", (cat + '%',), fetchone=True)[0]
-        emoji_id = get_category_emoji(cat)
-        kb.inline_keyboard.append([InlineKeyboardButton(text=cat, callback_data=f"cat_{cat[:30]}", icon_custom_emoji_id=emoji_id, style="primary")])
-    kb.inline_keyboard.append([InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")])
-    await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
+    text = f"{get_emoji('product_store')}<b>SELECT PRODUCT PANEL</b>"
+    prods = db_query("SELECT id, name, price_inr, stock, reseller_price FROM products WHERE stock > 0")
+    if not prods:
+        await show_products_for_panel(call, [])
+        return
+    await show_products_for_panel(call, prods)
+    return
+    
 
 @dp.callback_query(F.data.startswith("cat_"))
 async def view_panel_names(call: CallbackQuery):
