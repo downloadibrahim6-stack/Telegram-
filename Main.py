@@ -12,7 +12,9 @@ def get_banti_keyboard():
         [InlineKeyboardButton(text="💸 Refer And Earn", callback_data="refer", style="success"),
         [InlineKeyboardButton(text="💡 How To Use Bot", callback_data="tutorial", style="success")
         [InlineKeyboardButton(text="🛠 Support", callback_data="menu_support", style="danger")] 
-        [InlineKeyboardButton(text="🎁 Daily Gift", callback_data="gift", style="success")
+        [InlineKeyboardButton(text="🎁 Daily Gift", callback_data="gift", style="success")]
+        ]
+         
     ])
     return keyboard
     @dp.callback_query_handler(text="buy_now")
