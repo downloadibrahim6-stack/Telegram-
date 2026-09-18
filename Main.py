@@ -1,4 +1,4 @@
-import asyncio
+ import asyncio
 import sqlite3
 import random
 import logging
@@ -7,8 +7,6 @@ import aiohttp
 import hmac
 import hashlib
 import urllib.parse
-import qrcode
-from io import BytesIO
 from datetime import datetime, timedelta
 from typing import Optional, List, Tuple, Dict, Any
 
@@ -41,7 +39,9 @@ VIP_PRICE_INR = 1000.0
 WELCOME_STICKER_ID = "CAACAgIAAxkBAAEU-WZmH_..."  # Replace with your sticker ID
 
 FIXED_CATEGORIES = [
-    
+    "ANDROID NON ROOT PANEL",
+    "ANDROID ROOT PANEL",
+    "PC PANEL"
 ]
 
 # ==============================================================================
@@ -167,7 +167,7 @@ def get_emoji_icon(slot: str, default_id: str = None) -> str:
 # ==============================================================================
 UI_TEXTS = {
     "start_menu": (
-        "🏪 <b>SAHIL BHAI STORE</b>\n\n"
+        "✨ <b>SAHIL BHAI STORE</b>\n\n"
         "{product_store} 𝗣𝗥𝗢𝗗𝗨𝗖𝗧 𝗦𝘁𝗼𝗿𝗲 : 𝗮𝗹𝗹 𝗸𝗲𝘆𝘀 𝗣𝘂𝗿𝗰𝗵𝗮𝘀𝗲  & 𝗶𝗻𝘀𝘁𝗮𝗻𝘁𝗹𝘆 𝗱𝗲𝗹𝗶𝘃𝗲𝗿𝘆\n"
         "{profile} 𝗠𝘆 𝗽𝗿𝗼𝗳𝗶𝗹𝗲 : 𝗰𝗵𝗲𝗰𝗸 𝘆𝗼𝘂𝗿 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗶𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻\n"
         "{add_balance} 𝗔𝗱𝗱 𝗯𝗮𝗹𝗮𝗻𝗰𝗲 : 𝗱𝗲𝗽𝗼𝘀𝗶𝘁𝗲 𝗯𝗮𝗹𝗮𝗻𝗰𝗲 & 𝘀𝗲𝗰𝘂𝗿𝗲 𝘀𝗲𝗿𝘃𝗶𝗰𝗲\n"
@@ -584,6 +584,9 @@ class AdminStates(StatesGroup):
 # ==============================================================================
 def get_category_emoji(category: str) -> str:
     slot_map = {
+        "ANDROID NON ROOT PANEL": "category_android_non_root",
+        "ANDROID ROOT PANEL": "category_android_root",
+        "PC PANEL": "category_pc",
     }
     slot = slot_map.get(category)
     if slot:
@@ -619,16 +622,16 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
     
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="Buy now", callback_data="menu_shop",
+            text="Product Store", callback_data="menu_shop",
             icon_custom_emoji_id=get_emoji_icon("product_store"),
             style="danger"
         )
     ])
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="Check Update", callback_data="menu_profile",
+            text="My Profile", callback_data="menu_profile",
             icon_custom_emoji_id=get_emoji_icon("profile"),
-            style="success"
+            style="primary"
         ),
         InlineKeyboardButton(
             text="Add Balance", callback_data="menu_add_balance",
@@ -638,14 +641,14 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
     ])
     kb.inline_keyboard.append([
         InlineKeyboardButton(
-            text="Support", callback_data="menu_how_to",
+            text="Tutorials", callback_data="menu_how_to",
             icon_custom_emoji_id=get_emoji_icon("tutorial"),
-            style="danger"
+            style="success"
         ),
         InlineKeyboardButton(
-            text="How to use bot", callback_data="menu_support",
+            text="Support", callback_data="menu_support",
             icon_custom_emoji_id=get_emoji_icon("support"),
-            style="primary"
+            style="danger"
         )
     ])
     
@@ -793,20 +796,21 @@ async def generate_fampay_qr(user_id: int, amount: float, upi_id: str = None) ->
         upi_id = get_setting("fampay_upi_id", "")
         if not upi_id:
             return {"status": "error", "message": "UPI ID not configured"}
-
-            qr = qrcode.QRCode(box_size=10, border=4)
-qr.add_data(url)
-qr.make(fit=True)
-img = qr.make_image(fill_color="black", back_color="white")
-buffer = BytesIO()
-img.save(buffer, format="PNG")
-buffer.seek(0)
-await call.message.answer_photo(photo=buffer, caption="यहाँ आपका UPI QR कोड है।")
-return {"status": "error", "message": "Failed to parse response"}
-
-else:
-    return {"status": "error", "message": f"HTTP Error: {resp.status}"}
     
+    url = f"{FAMPAY_QR_URL}?upi={upi_id}&amount={amount}"
+    
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(url) as resp:
+                if resp.status == 200:
+                    try:
+                        result = await resp.json(content_type=None)
+                        return result
+                    except Exception as e:
+                        logger.error(f"Error parsing FamPay response: {e}")
+                        return {"status": "error", "message": "Failed to parse response"}
+                else:
+                    return {"status": "error", "message": f"HTTP Error: {resp.status}"}
         except Exception as e:
             logger.error(f"FamPay API Error: {e}")
             return {"status": "error", "message": str(e)}
@@ -999,20 +1003,15 @@ async def back_main(call: CallbackQuery, state: FSMContext):
 async def select_gateway_menu(call: CallbackQuery):
     log_activity(call.from_user.id, "VIEW_ADD_BALANCE")
     text = get_ui_text("add_balance_menu")
-    [
-    [
-        InlineKeyboardButton(text="₹100", callback_data="pay_100", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-        InlineKeyboardButton(text="₹200", callback_data="pay_200", icon_custom_emoji_id=get_emoji_icon("inr"), style="success")
-    ],
-    [
-        InlineKeyboardButton(text="₹500", callback_data="pay_500", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-        InlineKeyboardButton(text="₹1000", callback_data="pay_1000", icon_custom_emoji_id=get_emoji_icon("inr"), style="success")
-    ],
-    [
-        InlineKeyboardButton(text="🛠️ Custom Amount", callback_data="custom_deposit_keypad", style="success")
-    ]
-    ]
-    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="UPI PAY", callback_data="gateway_inr", icon_custom_emoji_id=get_emoji_icon("upi"), style="primary")
+        ],
+        [
+            InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")
+        ]
+    ])
+    await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
 
 # ==============================================================================
 # 12. FAMPAY UPI PAYMENT FLOW
@@ -1215,14 +1214,13 @@ async def process_crypto_txid(m: Message, state: FSMContext):
 async def view_shop_panels(call: CallbackQuery):
     log_activity(call.from_user.id, "VIEW_SHOP")
     kb = InlineKeyboardMarkup(inline_keyboard=[])
-    text = f"{get_emoji('product_store')}<b>SELECT PRODUCT PANEL</b>"
-    prods = db_query("SELECT id, name, price_inr, stock, reseller_price FROM products WHERE stock > 0")
-    if not prods:
-        await show_products_for_panel(call, [])
-        return
-    await show_products_for_panel(call, prods)
-    return
-    
+    text = f"{get_emoji('product_store')} <b><u>SELECT PRODUCT PANEL</u></b>\n━━━━━━━━━━━━━━━━━━\n\n{get_emoji('point_down')} <b>Choose a panel to view its packages:</b>"
+    for cat in FIXED_CATEGORIES:
+        count = db_query("SELECT COUNT(*) FROM products WHERE category LIKE ? AND is_active=1", (cat + '%',), fetchone=True)[0]
+        emoji_id = get_category_emoji(cat)
+        kb.inline_keyboard.append([InlineKeyboardButton(text=cat, callback_data=f"cat_{cat[:30]}", icon_custom_emoji_id=emoji_id, style="primary")])
+    kb.inline_keyboard.append([InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")])
+    await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
 
 @dp.callback_query(F.data.startswith("cat_"))
 async def view_panel_names(call: CallbackQuery):
@@ -1300,10 +1298,18 @@ async def process_buy(call: CallbackQuery):
     savings = normal_price - final_price
     if user[0] < final_price: return await call.answer(f"❌ Insufficient Balance! You need {fmt_curr(final_price)}.\nPlease Top Up your wallet.", show_alert=True)
     db_query("UPDATE users SET balance=?, spent=spent+?, orders_count=orders_count+1, total_saved=total_saved+? WHERE user_id=?", (user[0] - final_price, final_price, savings, call.from_user.id))
-    delivered_key = await buy_key(product_id=prod_id, duration=prod[4])
-    
-    commission = final_price * 0.15 
-    db_query("UPDATE users SET balance=balance+?, referral_earned=referral_earned+? WHERE user_id=?", (commission, commission, user[1]))
+    delivered_key = ""
+    if prod[2] > 0:
+        key_data = db_query("SELECT id, key_text FROM product_keys WHERE product_id=? AND is_used=0 LIMIT 1", (prod_id,), fetchone=True)
+        if key_data:
+            delivered_key = key_data[1]
+            db_query("UPDATE product_keys SET is_used=1 WHERE id=?", (key_data[0],))
+            db_query("UPDATE products SET stock=stock-1 WHERE id=?", (prod_id,))
+        else: delivered_key = "OUT_OF_STOCK_CONTACT_ADMIN_CODE_01"
+    else: delivered_key = "OUT_OF_STOCK_CONTACT_ADMIN_CODE_02"
+    if user[1]: 
+        commission = final_price * 0.15 
+        db_query("UPDATE users SET balance=balance+?, referral_earned=referral_earned+? WHERE user_id=?", (commission, commission, user[1]))
     product_full_name = f"{prod[6]} - {prod[8]} ({prod[0]})"
     db_query("INSERT INTO orders (user_id, product_name, price_paid, delivered_key, purchase_date) VALUES (?, ?, ?, ?, ?)", (call.from_user.id, product_full_name, final_price, delivered_key, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     log_activity(call.from_user.id, "PURCHASE_SUCCESS", f"Product: {product_full_name}, Paid: {final_price}")
@@ -1473,18 +1479,24 @@ async def process_redeem(m: Message, state: FSMContext):
 
 @dp.callback_query(F.data == "menu_how_to")
 async def tutorial_system(call: CallbackQuery):
-    Telegram_link_query = db_query("SELECT value FROM settings WHERE key='https://t.me/sahil_bhai_69'", fetchone=True)
-    Telegram_link = video_link_query[0] if Telegram_link_query and Telegram_link_query[0] != 'None' else None
+    video_link_query = db_query("SELECT value FROM settings WHERE key='how_to_video'", fetchone=True)
+    video_link = video_link_query[0] if video_link_query and video_link_query[0] != 'None' else None
     text = (f"{get_emoji('tutorial')} <b><u>— TUTORIALS & GUIDE —</u></b> {get_emoji('tutorial')}\n\n1️⃣ Add funds via <b>Add Balance</b>\n2️⃣ Navigate to <b>Product Store</b>\n3️⃣ Choose your desired Panel and Package validity.\n4️⃣ The Key and Installation APK link will be instantly provided.")
     kb = InlineKeyboardMarkup(inline_keyboard=[])
-    if Telegram_link: kb.inline_keyboard.append([InlineKeyboardButton(text="Contact on Telegram", url=Telegram_link, icon_custom_emoji_id=get_emoji_icon("tutorial"), style="primary")])
+    if video_link: kb.inline_keyboard.append([InlineKeyboardButton(text="Watch Full Video Tutorial", url=video_link, icon_custom_emoji_id=get_emoji_icon("tutorial"), style="primary")])
     kb.inline_keyboard.append([InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")])
     await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
 
 @dp.callback_query(F.data == "menu_support")
 async def support_center(call: CallbackQuery):
-    telegram_link = get_setting("support_telegram", "[https://t.me/SA](https://t.me/SA)")
-    
+    telegram_link = get_setting("support_telegram", "https://t.me/YourSupport")
+    whatsapp_link = get_setting("support_whatsapp", "https://wa.me/YourNumber")
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Contact on Telegram", url=telegram_link, icon_custom_emoji_id=get_emoji_icon("telegram"), style="primary")],
+        [InlineKeyboardButton(text="Contact on WhatsApp", url=whatsapp_link, icon_custom_emoji_id=get_emoji_icon("whatsapp"), style="primary")],
+        [InlineKeyboardButton(text="🎫 Open New Ticket", callback_data="open_ticket", style="primary"), InlineKeyboardButton(text="📋 My Open Tickets", callback_data="my_tickets", style="primary")], 
+        [InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")]
+    ])
     await call.message.edit_text(f"{get_emoji('telegram')}{get_emoji('whatsapp')} <b><u>— PREMIUM SUPPORT CENTER —</u></b>\n\nContact us via Telegram or WhatsApp for instant help, or open a support ticket for admin assistance.", reply_markup=kb, parse_mode='HTML')
 
 @dp.callback_query(F.data == "my_tickets")
@@ -2396,11 +2408,6 @@ async def main() -> None:
     finally:
         await bot.session.close()
 
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(RESELLER_API_URL, data=data) as response:
-            return await response.json()
-    
 if __name__ == "__main__":
     try:
         asyncio.run(main())
