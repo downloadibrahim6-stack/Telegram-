@@ -802,8 +802,8 @@ buffer = BytesIO()
 img.save(buffer, format="PNG")
 buffer.seek(0)
 await call.message.answer_photo(photo=buffer, caption="यहाँ आपका UPI QR कोड है।")
-        return{"status": "error", "message": "Failed to parse response"}
-                else:
+return{"status": "error", "message": "Failed to parse response"}
+else:
                     return {"status": "error", "message": f"HTTP Error: {resp.status}"}
         except Exception as e:
             logger.error(f"FamPay API Error: {e}")
