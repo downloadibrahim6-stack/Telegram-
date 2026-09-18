@@ -998,19 +998,20 @@ async def back_main(call: CallbackQuery, state: FSMContext):
 async def select_gateway_menu(call: CallbackQuery):
     log_activity(call.from_user.id, "VIEW_ADD_BALANCE")
     text = get_ui_text("add_balance_menu")
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            [
-InlineKeyboardButton(text="₹100", callback_data="pay_50", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-InlineKeyboardButton(text="₹200", callback_data="pay_100", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-],
-[
-InlineKeyboardButton(text="₹500", callback_data="pay_200", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-InlineKeyboardButton(text="₹1000", callback_data="pay_500", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
-],
-[
-InlineKeyboardButton(text="🛠️ Custom Amount", callback_data="custom_deposit_keypad", style="success"
-    ])
+    [
+    [
+        InlineKeyboardButton(text="₹100", callback_data="pay_100", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+        InlineKeyboardButton(text="₹200", callback_data="pay_200", icon_custom_emoji_id=get_emoji_icon("inr"), style="success")
+    ],
+    [
+        InlineKeyboardButton(text="₹500", callback_data="pay_500", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+        InlineKeyboardButton(text="₹1000", callback_data="pay_1000", icon_custom_emoji_id=get_emoji_icon("inr"), style="success")
+    ],
+    [
+        InlineKeyboardButton(text="🛠️ Custom Amount", callback_data="custom_deposit_keypad", style="success")
+    ]
+    ]
+    
 
 # ==============================================================================
 # 12. FAMPAY UPI PAYMENT FLOW
