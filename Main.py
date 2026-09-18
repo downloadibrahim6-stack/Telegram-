@@ -1000,11 +1000,17 @@ async def select_gateway_menu(call: CallbackQuery):
     text = get_ui_text("add_balance_menu")
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="UPI PAY", callback_data="gateway_inr", icon_custom_emoji_id=get_emoji_icon("upi"), style="primary")
-        ],
-        [
-            InlineKeyboardButton(text="BACK", callback_data="back_main", icon_custom_emoji_id=get_emoji_icon("back"), style="danger")
-        ]
+            [
+InlineKeyboardButton(text="₹100", callback_data="pay_50", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+InlineKeyboardButton(text="₹200", callback_data="pay_100", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+],
+[
+InlineKeyboardButton(text="₹500", callback_data="pay_200", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+InlineKeyboardButton(text="₹1000", callback_data="pay_500", icon_custom_emoji_id=get_emoji_icon("inr"), style="success"),
+],
+[
+InlineKeyboardButton(text="🛠️ Custom Amount", callback_data="custom_deposit_keypad", style="success")
+    ]
     ])
     await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
 
