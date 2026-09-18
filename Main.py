@@ -1294,16 +1294,8 @@ async def process_buy(call: CallbackQuery):
     savings = normal_price - final_price
     if user[0] < final_price: return await call.answer(f"❌ Insufficient Balance! You need {fmt_curr(final_price)}.\nPlease Top Up your wallet.", show_alert=True)
     db_query("UPDATE users SET balance=?, spent=spent+?, orders_count=orders_count+1, total_saved=total_saved+? WHERE user_id=?", (user[0] - final_price, final_price, savings, call.from_user.id))
-    delivered_key = ""
-    if prod[2] > 0:
-        key_data = db_query("SELECT id, key_text FROM product_keys WHERE product_id=? AND is_used=0 LIMIT 1", (prod_id,), fetchone=True)
-        if key_data:
-            delivered_key = key_data[1]
-            db_query("UPDATE product_keys SET is_used=1 WHERE id=?", (key_data[0],))
-            db_query("UPDATE products SET stock=stock-1 WHERE id=?", (prod_id,))
-        else: delivered_key = "OUT_OF_STOCK_CONTACT_ADMIN_CODE_01"
-    else: delivered_key = "OUT_OF_STOCK_CONTACT_ADMIN_CODE_02"
-    if user[1]: 
+    delivered_key = await buy_key(product_id=prod_id, duration=prod[4])
+    
         commission = final_price * 0.15 
         db_query("UPDATE users SET balance=balance+?, referral_earned=referral_earned+? WHERE user_id=?", (commission, commission, user[1]))
     product_full_name = f"{prod[6]} - {prod[8]} ({prod[0]})"
@@ -2398,18 +2390,7 @@ async def main() -> None:
     finally:
         await bot.session.close()
 
-import aiohttp
 
-RESELLER_API_URL = "https://bantibhaiya.to/api/reseller_v1.php"
-RESELLER_API_KEY = "7e711ed2780e1caa238b4c1dfccaeee4"
-
-async def buy_key(product_id, duration):
-    data = {
-        "api_key": RESELLER_API_KEY,
-        "action": "buy",
-        "product_id": product_id,
-        "duration": duration
-    }
     async with aiohttp.ClientSession() as session:
         async with session.post(RESELLER_API_URL, data=data) as response:
             return await response.json()
