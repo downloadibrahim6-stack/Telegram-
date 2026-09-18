@@ -638,12 +638,12 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text="Support", callback_data="menu_how_to",
             icon_custom_emoji_id=get_emoji_icon("tutorial"),
-            style="success"
+            style="danger"
         ),
         InlineKeyboardButton(
             text="How to use bot", callback_data="menu_support",
             icon_custom_emoji_id=get_emoji_icon("support"),
-            style="danger"
+            style="primary"
         )
     ])
     
