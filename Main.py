@@ -1011,7 +1011,7 @@ InlineKeyboardButton(text="₹1000", callback_data="pay_500", icon_custom_emoji_
 [
 InlineKeyboardButton(text="🛠️ Custom Amount", callback_data="custom_deposit_keypad", style="success")
     ]
-    await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML')
+    await call.message.edit_text(text, reply_markup=kb, parse_mode='HTML']
 
 # ==============================================================================
 # 12. FAMPAY UPI PAYMENT FLOW
