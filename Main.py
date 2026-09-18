@@ -17,8 +17,9 @@ def get_banti_keyboard():
          
     ])
     return keyboard
-    @dp.callback_query_handler(text="buy_now")
-async def buy_now_callback(call: types.CallbackQuery):
+    async def buy_now_callback(call: types.CallbackQuery):
+ await call.message.answer("Here is your product name!")
+
  await call.message.answer("यहाँ आपके प्रोडक्ट का नाम है!")
         @dp.callback_query_handler(text="check_update")
 async def check_update_callback(call: types.CallbackQuery):
