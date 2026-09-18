@@ -626,7 +626,7 @@ def main_menu_kb(user_id: Optional[int] = None) -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text="Check Update", callback_data="menu_profile",
             icon_custom_emoji_id=get_emoji_icon("profile"),
-            style="primary"
+            style="success"
         ),
         InlineKeyboardButton(
             text="Add Balance", callback_data="menu_add_balance",
