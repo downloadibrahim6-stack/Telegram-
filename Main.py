@@ -7,7 +7,8 @@ from io import BytesIO
 BOT_TOKEN = "8677878265:AAFJ2GMXaDerzMzaR6dzgwk-fhDslWvxTa0"
 
 bot = aiogram.Bot(token=BOT_TOKEN)
-dp = aiogram.Dispatcher(bot)
+dp = aiogram.Dispatcher()
+
 
 def get_banti_keyboard():
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
