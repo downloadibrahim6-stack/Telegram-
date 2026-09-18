@@ -1297,7 +1297,7 @@ async def process_buy(call: CallbackQuery):
     delivered_key = await buy_key(product_id=prod_id, duration=prod[4])
     
     commission = final_price * 0.15 
-        db_query("UPDATE users SET balance=balance+?, referral_earned=referral_earned+? WHERE user_id=?", (commission, commission, user[1]))
+    db_query("UPDATE users SET balance=balance+?, referral_earned=referral_earned+? WHERE user_id=?", (commission, commission, user[1]))
     product_full_name = f"{prod[6]} - {prod[8]} ({prod[0]})"
     db_query("INSERT INTO orders (user_id, product_name, price_paid, delivered_key, purchase_date) VALUES (?, ?, ?, ?, ?)", (call.from_user.id, product_full_name, final_price, delivered_key, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     log_activity(call.from_user.id, "PURCHASE_SUCCESS", f"Product: {product_full_name}, Paid: {final_price}")
