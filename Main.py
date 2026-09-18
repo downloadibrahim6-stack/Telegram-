@@ -7,6 +7,8 @@ import aiohttp
 import hmac
 import hashlib
 import urllib.parse
+import qrcode
+from io import BytesIO
 from datetime import datetime, timedelta
 from typing import Optional, List, Tuple, Dict, Any
 
@@ -791,18 +793,16 @@ async def generate_fampay_qr(user_id: int, amount: float, upi_id: str = None) ->
         upi_id = get_setting("fampay_upi_id", "")
         if not upi_id:
             return {"status": "error", "message": "UPI ID not configured"}
-    
-    url = f"{FAMPAY_QR_URL}?upi={upi_id}&amount={amount}"
-    
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    try:
-                        result = await resp.json(content_type=None)
-                        return result
-                    except Exception as e:
-                        logger.error(f"Error parsing FamPay response: {e}")
+
+            qr = qrcode.QRCode(box_size=10, border=4)
+qr.add_data(url)
+qr.make(fit=True)
+img = qr.make_image(fill_color="black", back_color="white")
+buffer = BytesIO()
+img.save(buffer, format="PNG")
+buffer.seek(0)
+await call.message.answer_photo(photo=buffer, caption="यहाँ आपका UPI QR कोड है।")
+
                         return {"status": "error", "message": "Failed to parse response"}
                 else:
                     return {"status": "error", "message": f"HTTP Error: {resp.status}"}
