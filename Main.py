@@ -4,7 +4,7 @@ import qrcode
 from io import BytesIO
 
 # Bot token can be added here in the config section
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = "8677878265:AAFJ2GMXaDerzMzaR6dzgwk-fhDslWvxTa0"
 
 bot = aiogram.Bot(token=BOT_TOKEN)
 dp = aiogram.Dispatcher(bot)
